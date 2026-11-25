@@ -4,13 +4,20 @@
 
 **Использование — ТОЛЬКО в личных целях** (см. LICENSE-SPACE-FRONT.txt).
 
-## Скачать сборку
-Перейдите в раздел **Releases** (справа) → релиз **v2026.11.25** → скачайте ZIP.
+## Скачать (раздел Releases → v2026.11.25)
+1. **SpaceFront_ERP_Marines_2026-11-25.zip** (500 МБ) — готовый билд: клиент + сервер + ресурсы, запускается без сборки.
+2. **SpaceFront_sources_2026-11-25.zip** (397 МБ) — полные исходники для разработки (инструкция сборки — BUILD.md внутри).
 
-## Состав
+## Состав билда
 - bin/Content.Client — клиент
 - bin/Content.Server — сервер
 - Resources — ресурсы
 
-Запуск сервера: cd bin\Content.Server && Content.Server.exe
-Запуск клиента: cd bin\Content.Client && SpaceStation14.exe
+## Запуск билда
+- Сервер: cd bin\Content.Server && Content.Server.exe
+- Клиент: cd bin\Content.Client && SpaceStation14.exe
+
+## Сборка из исходников
+- .NET SDK 9.0.100+, команды в BUILD.md внутри архива исходников.
+
+База: Space Station 14 (MIT) + RMC-14 (MIT + CC-BY-SA 3.0).
