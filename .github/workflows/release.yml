@@ -2,7 +2,7 @@ name: Release build
 
 on:
   push:
-    branches: [main]
+    branches: [main, spacefront-split]
   workflow_dispatch:
 
 permissions:
@@ -29,5 +29,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete latest --cleanup-tag --yes || true
-          gh release create latest release/*.zip --prerelease --title "Latest build" --target "$GITHUB_SHA" --notes "$GITHUB_SHA"
+          TAG=latest
+          [ "$GITHUB_REF_NAME" != "main" ] && TAG="latest-$GITHUB_REF_NAME"
+          gh release delete "$TAG" --cleanup-tag --yes || true
+          gh release create "$TAG" release/*.zip --prerelease --title "Latest build ($GITHUB_REF_NAME)" --target "$GITHUB_SHA" --notes "$GITHUB_SHA"
