@@ -1,20 +1,20 @@
-name: Release build
+name: Server build
 
 on:
   push:
-    branches: [main, spacefront-split]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: release
+  group: server-build
   cancel-in-progress: true
 
 jobs:
   package:
-    name: Package and publish
+    name: Package server
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.2.2
@@ -22,14 +22,20 @@ jobs:
         with:
           dotnet-version: 9.0.x
       - run: dotnet restore
-      - run: dotnet build Content.Packaging --configuration Release --no-restore /m
-      - run: dotnet run --project Content.Packaging server --platform win-x64 --platform linux-x64
-      - run: dotnet run --project Content.Packaging client --no-wipe-release
-      - name: Publish release
+      - run: dotnet run --project Content.Packaging server --platform win-x64 --hybrid-acz
+      - name: Publish to private builds repository
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.BUILDS_TOKEN }}
+          BUILDS_REPO: ${{ vars.BUILDS_REPO }}
         run: |
-          TAG=latest
-          [ "$GITHUB_REF_NAME" != "main" ] && TAG="latest-$GITHUB_REF_NAME"
-          gh release delete "$TAG" --cleanup-tag --yes || true
-          gh release create "$TAG" release/*.zip --prerelease --title "Latest build ($GITHUB_REF_NAME)" --target "$GITHUB_SHA" --notes "$GITHUB_SHA"
+          if [ -z "$GH_TOKEN" ] || [ -z "$BUILDS_REPO" ]; then
+            echo "::error::Нужны secret BUILDS_TOKEN и variable BUILDS_REPO (приватный репозиторий для сборок)"
+            exit 1
+          fi
+          cd release
+          sha256sum SS14.Server_win-x64.zip > SHA256SUMS
+          TAG="build-$(date -u +%Y%m%d-%H%M%S)-${GITHUB_SHA::7}"
+          gh release create "$TAG" SS14.Server_win-x64.zip SHA256SUMS \
+            --repo "$BUILDS_REPO" --title "$TAG" --notes "$GITHUB_SHA"
+          gh release list --repo "$BUILDS_REPO" --limit 100 --json tagName --jq '.[10:][].tagName' \
+            | xargs -r -I{} gh release delete {} --repo "$BUILDS_REPO" --cleanup-tag --yes

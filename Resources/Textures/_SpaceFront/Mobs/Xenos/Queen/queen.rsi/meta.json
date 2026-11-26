@@ -75,6 +75,10 @@
     {
       "name": "queen_parasite_left",
       "directions": 4
+    },
+    {
+      "name": "charging",
+      "directions": 4
     }
   ]
 }

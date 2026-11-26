@@ -3,3 +3,9 @@ obj/
 .vs/
 .idea/
 *.user
+
+# Локальные файлы сервера: не хранить в репозитории
+server_config.toml
+admins.yml
+/data/
+*.log

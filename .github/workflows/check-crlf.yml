@@ -1,4 +1,4 @@
-﻿name: CRLF Check
+name: CRLF Check
 
 on:
   pull_request:
@@ -11,5 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4.2.2
+    - name: Disable path quoting
+      run: git config core.quotepath false
     - name: Check for CRLF
       run: Tools/check_crlf.py
