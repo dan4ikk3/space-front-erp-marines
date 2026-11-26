@@ -2,17 +2,15 @@ name: Build & Test Debug
 
 on:
   push:
-    branches: &id001
-      - main
-      - spacefront-split
+    branches: [ master, staging, stable, main, spacefront-split ]
+  merge_group:
   pull_request:
-    types: [opened, reopened, synchronize, ready_for_review]
-    branches: *id001
-  workflow_dispatch:
+    types: [ opened, reopened, synchronize, ready_for_review ]
+    branches: [ master, staging, stable, main, spacefront-split ]
 
 jobs:
   build:
-    if: (github.event_name != 'pull_request' || (github.event.pull_request.draft == false && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association)))
+    if: github.actor != 'RounyBot' && github.event.pull_request.draft == false
     strategy:
       fail-fast: true
       matrix:
@@ -21,28 +19,31 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout Master
-        uses: actions/checkout@v4.2.2
+    - name: Checkout Master
+      uses: actions/checkout@v4.2.2
 
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v4.1.0
-        with:
-          dotnet-version: 9.0.x
 
-      - name: Install dependencies
-        run: dotnet restore
 
-      - name: Build Project
-        run: dotnet build --configuration DebugOpt --no-restore /m
 
-      - name: Run Content.Tests
-        run: dotnet test --no-build --configuration DebugOpt Content.Tests/Content.Tests.csproj -- NUnit.ConsoleOut=0
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4.1.0
+      with:
+        dotnet-version: 9.0.x
 
-      - name: Run Content.IntegrationTests
-        shell: pwsh
-        run: |
-          $env:DOTNET_gcServer=1
-          dotnet test --no-build --configuration DebugOpt Content.IntegrationTests/Content.IntegrationTests.csproj -- NUnit.ConsoleOut=0 NUnit.MapWarningTo=Failed
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build Project
+      run: dotnet build --configuration DebugOpt --no-restore /m
+
+    - name: Run Content.Tests
+      run: dotnet test --no-build --configuration DebugOpt Content.Tests/Content.Tests.csproj -- NUnit.ConsoleOut=0
+
+    - name: Run Content.IntegrationTests
+      shell: pwsh
+      run: |
+        $env:DOTNET_gcServer=1
+        dotnet test --no-build --configuration DebugOpt Content.IntegrationTests/Content.IntegrationTests.csproj -- NUnit.ConsoleOut=0 NUnit.MapWarningTo=Failed
   ci-success:
     name: Build & Test Debug
     needs:
@@ -51,8 +52,3 @@ jobs:
     steps:
       - name: CI succeeded
         run: exit 0
-permissions:
-  contents: read
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true

@@ -2,14 +2,12 @@ name: RSI Validator
 
 on:
   push:
-    branches:
-      - main
-      - spacefront-split
+    branches: [ master, staging, stable, main, spacefront-split ]
+  merge_group:
   pull_request:
     paths:
       - '**.rsi/**'
 
-  workflow_dispatch:
 jobs:
   validate_rsis:
     name: Validate RSIs
@@ -22,9 +20,3 @@ jobs:
       - name: Validate RSIs
         run: |
           python3 RobustToolbox/Schemas/validate_rsis.py Resources/
-    if: (github.event_name != 'pull_request' || (github.event.pull_request.draft == false && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association)))
-permissions:
-  contents: read
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
