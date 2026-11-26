@@ -7,9 +7,9 @@
   - type: Corrodible
     isCorrodible: false
   - type: Sprite
-    sprite: _RMC14/Structures/Dropships/AlamoWhite/alamo.rsi
+    sprite: _SpaceFront/Structures/Dropships/AlamoWhite/alamo.rsi
   - type: Icon
-    sprite: _RMC14/Structures/Dropships/AlamoWhite/alamo.rsi
+    sprite: _SpaceFront/Structures/Dropships/AlamoWhite/alamo.rsi
 
 - type: entity
   parent: CMBaseAlamoWall
@@ -996,7 +996,7 @@
   suffix: 85
   components:
   - type: Sprite
-    sprite: _RMC14/Structures/Dropships/AlamoWhite/alamo.rsi
+    sprite: _SpaceFront/Structures/Dropships/AlamoWhite/alamo.rsi
     layers:
     - state: "85"
     - state: "85"
@@ -1004,7 +1004,7 @@
     - state: "85"
       map: [ "enum.DropshipPointVisualsLayers.AttachmentBase" ]
   - type: Icon
-    sprite: _RMC14/Structures/Dropships/AlamoWhite/alamo.rsi
+    sprite: _SpaceFront/Structures/Dropships/AlamoWhite/alamo.rsi
     state: "85"
   - type: Occluder
     enabled: false

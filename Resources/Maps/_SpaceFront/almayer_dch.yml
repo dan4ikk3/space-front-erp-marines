@@ -5,7 +5,7 @@ meta:
   forkId: ""
   forkVersion: ""
   time: 11/06/2026 14:30:01
-  entityCount: 11626
+  entityCount: 11628
 maps:
 - 1
 grids:
@@ -82274,6 +82274,14 @@ entities:
       parent: 1
 - proto: TableStone
   entities:
+  - uid: 11700
+    components:
+    - type: MetaData
+      name: каменный стол
+    - type: Transform
+      pos: 14.5,-7.5
+      parent: 1
+
   - uid: 11593
     components:
     - type: Transform
@@ -82485,5 +82493,14 @@ entities:
     - type: Transform
       pos: 28.48,-2.42
       parent: 1
-...
+- proto: CMComputerDropshipNavigationPlanetside
+  entities:
+  - uid: 11701
+    components:
+    - type: MetaData
+      name: навигационный компьютер дропшипа
+    - type: Transform
+      pos: 14.5,-7.5
+      parent: 1
 
+...

@@ -26,6 +26,8 @@ public sealed class SquadWarDeathWindowSystem : EntitySystem
 
     private void OnRespawnReset(RespawnResetEvent msg)
     {
+        Log.Info($"SF deathwindow diag: event received, DeathWindowSeconds={msg.DeathWindowSeconds}, Time={msg.Time}");
+
         if (msg.DeathWindowSeconds < 0)
         {
             _window?.Dispose();

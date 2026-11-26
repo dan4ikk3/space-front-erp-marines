@@ -62,7 +62,7 @@
   - type: Transform
     anchored: false
   - type: Sprite
-    sprite: _RMC14/Objects/NormandyBlack/dropship_attachments.rsi
+    sprite: _SpaceFront/Objects/NormandyBlack/dropship_attachments.rsi
     layers:
     - state: "fuel_base"
       map: [ "enum.DropshipPointVisualsLayers.AttachedUtility"]
@@ -71,7 +71,7 @@
     - state: "fuel_base"
       map: [ "enum.DropshipPointVisualsLayers.AttachmentBase"]
   - type: Icon
-    sprite: _RMC14/Objects/NormandyBlack/dropship_attachments.rsi
+    sprite: _SpaceFront/Objects/NormandyBlack/dropship_attachments.rsi
     state: "fuel_base"
   - type: Physics
     bodyType: Static
