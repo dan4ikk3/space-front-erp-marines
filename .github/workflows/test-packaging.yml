@@ -1,8 +1,10 @@
-﻿name: Test Packaging
+name: Test Packaging
 
 on:
   push:
-    branches: [ master, staging, stable ]
+    branches: &id001
+      - main
+      - spacefront-split
     paths:
       - '**.cs'
       - '**.csproj'
@@ -13,10 +15,9 @@ on:
       # why not just do both
       - 'RobustToolbox'
       - 'RobustToolbox/**'
-  merge_group:
   pull_request:
-    types: [ opened, reopened, synchronize, ready_for_review ]
-    branches: [ master, staging, stable ]
+    types: [opened, reopened, synchronize, ready_for_review]
+    branches: *id001
     paths:
       - '**.cs'
       - '**.csproj'
@@ -26,27 +27,16 @@ on:
       - 'RobustToolbox'
       - 'RobustToolbox/**'
 
+  workflow_dispatch:
 jobs:
   build:
     name: Test Packaging
-    if: github.actor != 'PJBot' && github.event.pull_request.draft == false
+    if: (github.event_name != 'pull_request' || (github.event.pull_request.draft == false && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association)))
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Master
         uses: actions/checkout@v4.2.2
-
-      - name: Setup Submodule
-        run: |
-          git submodule update --init --recursive
-
-      - name: Pull engine updates
-        uses: space-wizards/submodule-dependency@v0.1.5
-
-      - name: Update Engine Submodules
-        run: |
-          cd RobustToolbox/
-          git submodule update --init --recursive
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4.1.0
@@ -64,3 +54,8 @@ jobs:
 
       - name: Package client
         run: dotnet run --project Content.Packaging client --no-wipe-release
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true

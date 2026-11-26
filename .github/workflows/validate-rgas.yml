@@ -1,25 +1,28 @@
 name: RGA schema validator
 on:
   push:
-    branches: [ master, staging, stable ]
-  merge_group:
+    branches:
+      - main
+      - spacefront-split
   pull_request:
-    types: [ opened, reopened, synchronize, ready_for_review ]
+    types: [opened, reopened, synchronize, ready_for_review]
+  workflow_dispatch:
 
 jobs:
   yaml-schema-validation:
     name: YAML RGA schema validator
-    if: github.actor != 'PJBot' && github.event.pull_request.draft == false
+    if: (github.event_name != 'pull_request' || (github.event.pull_request.draft == false && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association)))
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4.2.2
-    - name: Setup Submodule
-      run: git submodule update --init
-    - name: Pull engine updates
-      uses: space-wizards/submodule-dependency@v0.1.5
-    - uses: PaulRitter/yaml-schema-validator@v1
-      with:
-        schema: .github/Schemas/rga.yml
-        path_pattern: .*attributions.ya?ml$
-        validators_path: .github/Schemas/rga_validators.py
-        validators_requirements: .github/Schemas/rga_requirements.txt
+      - uses: actions/checkout@v4.2.2
+      - uses: PaulRitter/yaml-schema-validator@v1
+        with:
+          schema: .github/Schemas/rga.yml
+          path_pattern: .*attributions.ya?ml$
+          validators_path: .github/Schemas/rga_validators.py
+          validators_requirements: .github/Schemas/rga_requirements.txt
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true

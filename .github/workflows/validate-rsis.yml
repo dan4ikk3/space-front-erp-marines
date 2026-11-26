@@ -2,25 +2,29 @@ name: RSI Validator
 
 on:
   push:
-    branches: [ master, staging, stable ]
-  merge_group:
+    branches:
+      - main
+      - spacefront-split
   pull_request:
     paths:
       - '**.rsi/**'
 
+  workflow_dispatch:
 jobs:
   validate_rsis:
     name: Validate RSIs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.2.2
-      - name: Setup Submodule
-        run: git submodule update --init
-      - name: Pull engine updates
-        uses: space-wizards/submodule-dependency@v0.1.5
       - name: Install Python dependencies
         run: |
           pip3 install --ignore-installed --user pillow jsonschema
       - name: Validate RSIs
         run: |
           python3 RobustToolbox/Schemas/validate_rsis.py Resources/
+    if: (github.event_name != 'pull_request' || (github.event.pull_request.draft == false && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association)))
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
