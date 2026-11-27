@@ -1,4 +1,4 @@
-name: Server build
+name: Release server
 
 on:
   push:
@@ -6,10 +6,10 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: server-build
+  group: release-server
   cancel-in-progress: true
 
 jobs:
@@ -17,25 +17,15 @@ jobs:
     name: Package server
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.2.2
-      - uses: actions/setup-dotnet@v4.1.0
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 9.0.x
       - run: dotnet restore
       - run: dotnet run --project Content.Packaging server --platform win-x64 --hybrid-acz
-      - name: Publish to private builds repository
+      - name: Publish release
         env:
-          GH_TOKEN: ${{ secrets.BUILDS_TOKEN }}
-          BUILDS_REPO: ${{ vars.BUILDS_REPO }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          if [ -z "$GH_TOKEN" ] || [ -z "$BUILDS_REPO" ]; then
-            echo "::error::Нужны secret BUILDS_TOKEN и variable BUILDS_REPO (приватный репозиторий для сборок)"
-            exit 1
-          fi
-          cd release
-          sha256sum SS14.Server_win-x64.zip > SHA256SUMS
-          TAG="build-$(date -u +%Y%m%d-%H%M%S)-${GITHUB_SHA::7}"
-          gh release create "$TAG" SS14.Server_win-x64.zip SHA256SUMS \
-            --repo "$BUILDS_REPO" --title "$TAG" --notes "$GITHUB_SHA"
-          gh release list --repo "$BUILDS_REPO" --limit 100 --json tagName --jq '.[10:][].tagName' \
-            | xargs -r -I{} gh release delete {} --repo "$BUILDS_REPO" --cleanup-tag --yes
+          gh release delete latest --cleanup-tag --yes || true
+          gh release create latest release/SS14.Server_win-x64.zip --title "Server build" --notes "$GITHUB_SHA" --target "$GITHUB_SHA"

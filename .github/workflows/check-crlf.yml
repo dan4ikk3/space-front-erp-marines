@@ -10,7 +10,7 @@ jobs:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4.2.2
+    - uses: actions/checkout@v5
     - name: Disable path quoting
       run: git config core.quotepath false
     - name: Check for CRLF
